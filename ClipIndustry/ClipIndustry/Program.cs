@@ -58,6 +58,8 @@ namespace ClipIndustry
             if (isClient)
             {
                 SH_ClientNetworking networking = new SH_ClientNetworking("http://localhost:8080/");
+                Console.WriteLine(networking.RequestContextFromServer().game.gameMaps[0].mapTiles.Length);
+
             }
 
             Console.Read();
