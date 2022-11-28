@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "lwnSyt8eyWNxiUlRr6jWmm7cXjMxhk32Vhm7yIQpnJpaJ6a/Nxkho0jFleXyGszSI059GBUaK5G1D/HISGAZVA==",
+  "success": true,
+  "projectFilePath": "D:\\Documents\\vs\\ClipIndustry\\ClipIndustry\\ClipIndustry\\ClipIndustry.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Owen\\.nuget\\packages\\sayers.sdl2.core\\1.0.11\\sayers.sdl2.core.1.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}
