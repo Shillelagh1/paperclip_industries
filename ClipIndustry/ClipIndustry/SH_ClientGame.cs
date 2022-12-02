@@ -9,45 +9,38 @@ namespace ClipIndustry
 {
     internal class SH_ClientGame
     {
-        SH_ClientNetworking networking;
-        SH_GameContext context;
+        public SH_ClientNetworking networking;
+        public SH_GameContext context;
 
         bool gameRun;
         bool gameHalt = false;
 
         //SDL2 stuff
-        IntPtr window;
-        IntPtr renderer;
-        IntPtr propertyWindow;
-        IntPtr propertyRenderer;
-
-        //Map stuff
-        struct TileInfo
-        {
-            public int _x;
-            public int _y;
-        }
-        TileInfo hoveredTile = new TileInfo();
-        TileInfo selectedTile = new TileInfo();
-        SH_MapRegion focusRegion = null;
-        int tilePixelHeight = 5;
-        int tilePixelWidth = 4;
+        public IntPtr window;
+        public IntPtr renderer;
+        public IntPtr propertyWindow;
+        public IntPtr propertyRenderer;
 
         //Page things
-        enum SelectedPage
+        SH_CLMainWindow_Map nwindow = null;
+        public enum MainPages
         {
-            page_map
+            page_map,
+            page
         }
 
-        enum SelectedPropertyMenu
+        public enum PropertyMenus
         {
             map,
             tile_inspect,
             crafting
         }
 
-        SelectedPage selectedPage = SelectedPage.page_map;
-        SelectedPropertyMenu selectedProperty = SelectedPropertyMenu.map;
+        Dictionary<MainPages, SH_CLMainWindow> pages = new Dictionary<MainPages, SH_CLMainWindow>();
+        Dictionary<PropertyMenus, SH_CLPropertyWindow> properties = new Dictionary<PropertyMenus, SH_CLPropertyWindow>();
+
+        public MainPages selectedPage = MainPages.page_map;
+        public PropertyMenus selectedProperty = PropertyMenus.map;
 
         /// <summary>
         /// Constructor. Starts the game as well
@@ -58,7 +51,7 @@ namespace ClipIndustry
             //Establish a network connection
             networking = _networking;
             gameRun = true;
-
+            nwindow = new SH_CLMainWindow_Map();
             //Make sure we can connect to the server on the first try
             //TODO: Give the server multiple attempts to respond and
             //allow the client to retry again later without restarting the application.
@@ -76,6 +69,8 @@ namespace ClipIndustry
         private void GameUpdateThread()
         {
             setupSDL();
+
+            setupPagesAndProperties();
 
             context = networking.RequestContextFromServer();
 
@@ -96,17 +91,14 @@ namespace ClipIndustry
                         case SDL.SDL_EventType.SDL_QUIT:
                             gameRun = false;
                             break;
-                        case SDL.SDL_EventType.SDL_KEYDOWN:
-                            switch (e.key.keysym.sym)
-                            {
-                                case SDL.SDL_Keycode.SDLK_t:
-                                    if(SDL.SDL_GetModState() == SDL.SDL_Keymod.KMOD_LCTRL)
-                                    {
-                                        selectedProperty = SelectedPropertyMenu.crafting;
-                                    }
-                                    break;
-                            }
-                            break;
+                    }
+
+                    if (SDL.SDL_GetMouseFocus() == window)
+                    {
+                        if (!pages[selectedPage].handleEvent(e, this))
+                        {
+
+                        }
                     }
                 }
 
@@ -120,103 +112,13 @@ namespace ClipIndustry
         /// </summary>
         public void updatePage()
         {
-            //Render the main page
-            switch (selectedPage)
-            {
-                default:
-                    SDL.SDL_SetRenderDrawColor(renderer, 204, 230, 255, 255);
-
-                    SDL.SDL_RenderClear(renderer);
-
-                    SDL.SDL_RenderPresent(renderer);
-                    break;
-
-                case SelectedPage.page_map:
-                    #region
-                    //Render
-                    SDL.SDL_SetRenderDrawColor(renderer, 204, 230, 255, 255);
-
-                    SDL.SDL_RenderClear(renderer);
-
-                    //TODO: add support for more maps?
-
-                    int selectedMapIndex = 0;
-                    SH_Map selectedMap = context.game.gameMaps[selectedMapIndex];
-
-                    SDL.SDL_Rect _rect = new SDL.SDL_Rect();
-                    _rect.x = 0;
-                    _rect.y = 0;
-                    _rect.w = tilePixelWidth;
-                    _rect.h = tilePixelHeight;
-                    for(int x = 0; x < selectedMap.mapWidth - 1; x++)
-                    {
-                        for (int y = 0; y < selectedMap.mapHeight -1; y++)
-                        {
-                            SH_MapTile _tile = selectedMap.mapTiles[x, y];
-                            _rect.x = x * tilePixelWidth;
-                            _rect.y = y * tilePixelHeight;
-
-                            SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
-                            if(selectedMap.isValidPosition(hoveredTile._x, hoveredTile._y))
-                            {
-                                //Calculate if the region highlight is applied. World's longest line?
-                                bool highlight = (DateTime.Now.Second % 2 == 0) && selectedMap.mapTiles[hoveredTile._x, hoveredTile._y].region.regionMapTiles.Contains(_tile);
-
-                                if (hoveredTile._x == x && hoveredTile._y == y)
-                                {
-                                    SDL.SDL_SetRenderDrawColor(renderer, 255, 240, 40, 255);
-                                }
-                                else if (highlight)
-                                {
-                                    SDL.SDL_SetRenderDrawColor(renderer, 255, 240, 40, 64);
-                                }
-                            }
-
-                            if (_tile.region.regionIdentifier != "X") SDL.SDL_RenderFillRect(renderer, ref _rect);
-                        }
-                    }
-                    SDL.SDL_RenderPresent(renderer);
-
-                    //Tile Selection
-                    if(SDL.SDL_GetMouseFocus() == window)
-                    {
-                        int _mouseX = 0;
-                        int _mouseY = 0;
-
-                        SDL.SDL_GetMouseState(out _mouseX, out _mouseY);
-
-                        int _slX = (int)MathF.Floor(_mouseX / tilePixelWidth);
-                        int _slY = (int)MathF.Floor(_mouseY / tilePixelHeight);
-
-                        hoveredTile._x = _slX;
-                        hoveredTile._y = _slY;
-
-                        if(selectedMap.isValidPosition(_slX, _slY))
-                        {
-                            focusRegion = selectedMap.mapTiles[_slX, _slY].region;
-                        }
-                    }
-                    #endregion
-                    break;
-            }
+            //Update the selected main page.
+            pages[selectedPage].updateWindow(this);
         }
 
         public void updateProperty()
         {
-            switch (selectedProperty)
-            {
-                default:
-                    SDL.SDL_SetRenderDrawColor(propertyRenderer, 204, 230, 255, 255);
-
-                    SDL.SDL_RenderClear(propertyRenderer);
-
-                    SDL.SDL_RenderPresent(propertyRenderer);
-                    break;
-                case SelectedPropertyMenu.crafting:
-
-                    break;
-            }
+            properties[selectedProperty].updateProperty(this);
         }
 
         /// <summary>
@@ -242,6 +144,20 @@ namespace ClipIndustry
                                         SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
 
             SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG | SDL_image.IMG_InitFlags.IMG_INIT_JPG);
+        }
+
+        /// <summary>
+        /// Populate the dictionaries with all the necessary values
+        /// </summary>
+        void setupPagesAndProperties()
+        {
+            //Setup pages
+            pages.Add(MainPages.page, new SH_CLMainWindow());
+            pages.Add(MainPages.page_map, new SH_CLMainWindow_Map());
+
+            //Setup properties
+            properties.Add(PropertyMenus.map, new SH_CLPropertyWindow());
+            properties.Add(PropertyMenus.tile_inspect, new SH_CLPropertyWindow_TileInspect());
         }
     }
 }

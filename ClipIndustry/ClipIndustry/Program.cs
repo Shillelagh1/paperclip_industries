@@ -45,7 +45,7 @@ namespace ClipIndustry
                 gameContext.startAllUserListeners(gameServer);
                 gameContext.game.gameMaps = new SH_Map[]
                 {
-                    SH_Map.newMapFromText("C:\\Users\\Owen\\Documents\\pclip\\paperclip_industries\\ClipIndustry\\extras\\mapEarth.txt")
+                    SH_Map.newMapFromText("extras\\mapEarth.txt")
                 };
                 gameContext.game.name = "nut dude.EPG";
             }
@@ -57,7 +57,8 @@ namespace ClipIndustry
 
             if (isClient)
             {
-                SH_ClientNetworking networking = new SH_ClientNetworking("http://localhost:8080/");
+                Console.Write("Server IP: ");
+                SH_ClientNetworking networking = new SH_ClientNetworking("http://" + Console.ReadLine() + "/");
                 SH_ClientGame clientGame = new SH_ClientGame(networking);
             }
 
