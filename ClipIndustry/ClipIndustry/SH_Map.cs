@@ -11,6 +11,8 @@ namespace ClipIndustry
     internal class SH_Map
     {
         public Dictionary<string, SH_MapRegion> mapRegions = new Dictionary<string, SH_MapRegion>();
+        public int mapWidth = 0;
+        public int mapHeight = 0;
         public SH_MapTile[,] mapTiles;
 
         public SH_Map() 
@@ -34,19 +36,19 @@ namespace ClipIndustry
             //3xHex - Height
             //3xHex - Width
             string mapInfo = fileText.Substring(0, 6);
-            int mapHeight = Convert.ToInt32(mapInfo.Substring(0, 3), 16);
-            int mapWidth = Convert.ToInt32(mapInfo.Substring(3, 3), 16);
+            _map.mapHeight = Convert.ToInt32(mapInfo.Substring(0, 3), 16);
+            _map.mapWidth = Convert.ToInt32(mapInfo.Substring(3, 3), 16);
 
             //Console.WriteLine(String.Format("{0}, {1}", mapWidth, mapHeight));
 
-            _map.mapTiles = new SH_MapTile[mapWidth, mapHeight];
+            _map.mapTiles = new SH_MapTile[_map.mapWidth, _map.mapHeight];
 
             //Console.WriteLine(String.Format("Len: {0}", mapData.Length));
 
             for(int i = 0; i < _map.mapTiles.Length; i++)
             {
-                int x = i % mapWidth;
-                int y = (int)MathF.Floor(i / mapWidth);
+                int x = i % _map.mapWidth;
+                int y = (int)MathF.Floor(i / _map.mapWidth);
 
                 //just in case
                 bool madeNew = false;
@@ -62,6 +64,7 @@ namespace ClipIndustry
                 {
                     madeNew = true;
                     _region = new SH_MapRegion();
+                    _region.regionIdentifier = mapData[i].ToString();
                     _map.mapRegions.Add(mapData[i].ToString(), _region);
                 }
 
@@ -75,6 +78,11 @@ namespace ClipIndustry
             }
 
             return _map;
+        }
+
+        public bool isValidPosition(int _x, int _y)
+        {
+            return _x < mapWidth && _y < mapHeight;
         }
     }
 
