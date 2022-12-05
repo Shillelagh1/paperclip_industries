@@ -91,6 +91,7 @@ namespace ClipIndustry
                     if (_tile.region.regionIdentifier != "X") SDL.SDL_RenderFillRect(_client.renderer, ref _rect);
                 }
             }
+
             SDL.SDL_RenderPresent(_client.renderer);
 
             //Tile Selection

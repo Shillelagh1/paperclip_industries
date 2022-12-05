@@ -143,7 +143,7 @@ namespace ClipIndustry
                                         SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
                                         SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
 
-            SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG | SDL_image.IMG_InitFlags.IMG_INIT_JPG);
+            Console.WriteLine("CL_WREN: Image initialized: " + SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG | SDL_image.IMG_InitFlags.IMG_INIT_JPG));
         }
 
         /// <summary>
@@ -158,6 +158,19 @@ namespace ClipIndustry
             //Setup properties
             properties.Add(PropertyMenus.map, new SH_CLPropertyWindow());
             properties.Add(PropertyMenus.tile_inspect, new SH_CLPropertyWindow_TileInspect());
+
+            //Debug shiz
+            SheetTexture sheet = new SheetTexture();
+            sheet.loadFromFile("extras\\wmap.png", renderer);
+
+            SDL.SDL_Rect _rect = new SDL.SDL_Rect();
+
+            _rect.w = 100;
+            _rect.h = 100;
+
+            sheet.spriteClips = new SDL.SDL_Rect[] { _rect };
+
+            sheet.render(renderer, 0, 0, 0);
         }
     }
 }

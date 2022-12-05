@@ -44,11 +44,13 @@ namespace ClipIndustry
                 Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
             }
 
+            /*
             // Initilizes SDL_image for use with png files.
             if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0)
             {
                 Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
             }
+            */
 
             var running = true;
 

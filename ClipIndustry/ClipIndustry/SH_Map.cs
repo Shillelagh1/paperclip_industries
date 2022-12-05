@@ -47,7 +47,7 @@ namespace ClipIndustry
 
             for(int i = 0; i < _map.mapTiles.Length; i++)
             {
-                int x = i % _map.mapWidth;
+                int x = (i % _map.mapWidth);
                 int y = (int)MathF.Floor(i / _map.mapWidth);
 
                 //just in case

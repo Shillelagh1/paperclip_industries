@@ -35,6 +35,8 @@ namespace ClipIndustry
                 Console.WriteLine("(FATAL) CL_NET: Failure to contact server.");
             }
         }
+
+        //Attempt to reach the given URL and make sure it responds like the server would
         public bool checkServerConnectivity()
         {
             bool success = true;
@@ -56,6 +58,7 @@ namespace ClipIndustry
             return success;
         }
 
+        //Request a complete version of the game context from the server. (Takes a while, use differential).
         public SH_GameContext RequestContextFromServer()
         {
             using(HttpClient client = new HttpClient())
