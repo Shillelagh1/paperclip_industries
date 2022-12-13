@@ -11,24 +11,25 @@ using System.IO;
 
 namespace ClipIndustry
 {
+    //class for information about every players
+    [Serializable]
+    class SH_GameContext_User
+    {
+        string userLogin;
+        string userPassK;
+        public SH_GameContext_User(string login, string passK)
+        {
+            userLogin = login;
+            userPassK = passK;
+        }
+    }
+
     /// <summary>
     /// Provides context for the game (SH_Game). Provides authentication and allows users to interact with the game.
     /// </summary>
     [Serializable]
     class SH_GameContext
     {
-        //Struct for information about every players
-        [Serializable]
-        struct SH_GameContext_User
-        {
-            string userLogin;
-            string userPassK;
-            public SH_GameContext_User(string login, string passK)
-            {
-                userLogin = login;
-                userPassK = passK;
-            }
-        }
 
         //All players
         Dictionary<string, SH_GameContext_User> gameUsers;

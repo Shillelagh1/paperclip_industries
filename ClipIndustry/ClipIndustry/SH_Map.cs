@@ -56,7 +56,9 @@ namespace ClipIndustry
                 //Search the regions dictionary for a region. If we have one, set the map tile region to this region
                 //If we dont have one, create on and set the map tile region to the new region
                 SH_MapRegion _region;
-                if (_map.mapRegions.TryGetValue(mapData[i].ToString() , out _region)) 
+                //TODO: come up with a less garbage fix (maybe fix the mapgen!!)
+                char _imapdata = i < mapData.Length ? mapData[i] : 'X';
+                if (_map.mapRegions.TryGetValue(_imapdata.ToString() , out _region)) 
                 {
                     madeNew = false;
                 }
@@ -64,8 +66,8 @@ namespace ClipIndustry
                 {
                     madeNew = true;
                     _region = new SH_MapRegion();
-                    _region.regionIdentifier = mapData[i].ToString();
-                    _map.mapRegions.Add(mapData[i].ToString(), _region);
+                    _region.regionIdentifier = _imapdata.ToString();
+                    _map.mapRegions.Add(_imapdata.ToString(), _region);
                 }
 
                 //Debug shiz
