@@ -1,3 +1,5 @@
+This project is dead. Lost all the files after several months of not progress because I didn't upload the files to this github, which I created specifically to avoid this from happening lmao.
+
 # paperclip_industries
 Play an overengineered game, win stupid prizes.
 
